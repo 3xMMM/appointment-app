@@ -1,0 +1,32 @@
+form.AppointmentForm .FormControl {
+    margin-bottom: 16px;
+}
+
+form.AppointmentForm .FormControl:last-of-type {
+    margin-bottom: 20px;
+}
+
+form.AppointmentForm .FormControl label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+form.AppointmentForm .FormControl input,
+form.AppointmentForm .FormControl select,
+form.AppointmentForm .FormControl textarea {
+    box-sizing: border-box;
+    padding: 6px 8px;
+    background-color: #f8fafc;
+    border: solid #e2e8f0;
+    border-radius: 8px;
+}
+
+
+.w-full {
+    width: 100%;
+}
+
+.w-half {
+    width: 47.5%;
+}

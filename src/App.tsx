@@ -2,8 +2,9 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import useAppointments from './appointments/useAppointments';
 import AppointmentForm from './appointments/AppointmentForm';
-import Modal from './modal/Modal';
-import AppointmentListItem from './appointments/AppointmentListItem';
+import Modal from './components/Modal';
+import AppointmentCard from './appointments/AppointmentCard';
+import Button from './components/Button';
 
 export enum AppointmentLocation {
     SanDiego = 'San Diego',
@@ -42,12 +43,16 @@ function App() {
     const [initialFormData, setInitialFormData] = useState<Appointment | null>(null);
     const addButton = useRef<HTMLButtonElement | null>(null);
 
+    const [showDeleteConfirmationModal, setShowDeleteConfirmationModal] = useState(false);
+    const [appointmentIdPendingDeletion, setAppointmentIdPendingDeletion] = useState<null | number>(null);
+    const deleteButton = useRef<HTMLButtonElement | null>(null);
+
     // One-time setup on-load
     useEffect(() => {
         addAppointment({
             date: '2023-02-24',
             time: '11:00',
-            location: AppointmentLocation.London,
+            location: AppointmentLocation.Seattle,
             description: 'Initial Appointment'
         });
     }, []);
@@ -64,17 +69,40 @@ function App() {
         setFormType('edit');
     }
 
+    const handleDeleteAppointment = (appointment: Appointment) => {
+        setShowDeleteConfirmationModal(true);
+        setAppointmentIdPendingDeletion(appointment.id as number);
+        deleteButton.current?.focus();
+    }
+
+    const handleConfirmedDeleteAppointment = () => {
+        const appointmentToDelete = appointments.find(a => a.id === appointmentIdPendingDeletion);
+        if (appointmentToDelete) {
+            deleteAppointment(appointmentToDelete);
+        } else {
+            throw Error('Could not delete appointment; it does not exist.');
+        }
+        setAppointmentIdPendingDeletion(null);
+        setShowDeleteConfirmationModal(false);
+        addButton.current?.focus();
+    }
+
+    const appointmentToBeDeleted = (appointmentIdPendingDeletion) ? appointments.find(a => a.id === appointmentIdPendingDeletion) : null;
+
     const sortedAppointments = useMemo(() => appointments.sort(sortAppointmentsInAscendingOrder), [appointments]);
 
     return (
         <div className="App">
             <header>
-                <h1>Appointments</h1>
+                <h1>My Appointments</h1>
+                <span className='AppointmentTotal'>You have { appointments.length } appointment{ appointments.length !== 1 ? 's' : '' }</span>
             </header>
+
+            { /* TODO Make this a component */ }
             <Modal
                 title={`${formType === 'add' ? 'Add' : 'Edit' } Appointment`}
                 show={showForm}
-                setShow={setShowForm}
+                onClose={() => setShowForm(false)}
                 elementToFocusOnClose={addButton}
             >
                 <AppointmentForm
@@ -84,32 +112,51 @@ function App() {
                     addHandler={addAppointment}
                     editHandler={editAppointment}
                     submitCallback={() => setShowForm(false)}
+                    closeCallback={() => setShowForm(false)}
                 />
             </Modal>
+
+            { /* TODO Make this a component */ }
+            <Modal
+                title='Cancel Confirmation'
+                show={showDeleteConfirmationModal}
+                onClose={() => setShowDeleteConfirmationModal(false)}
+                elementToFocusOnClose={addButton}
+            >
+                <div>
+                    <div style={{ marginBottom: '0' }}>Are you sure you want to cancel this appointment?</div>
+                    { appointmentToBeDeleted &&
+                        <AppointmentCard appointment={appointmentToBeDeleted}/>
+                    }
+                    <Button hierarchy='Primary' isDestructive ref={deleteButton} onClick={handleConfirmedDeleteAppointment}>Cancel</Button>
+                    <Button isDestructive onClick={() => setShowDeleteConfirmationModal(false)}>Back</Button>
+                </div>
+            </Modal>
+
             <main>
-                <button ref={addButton} onClick={showAddForm}>Add Appointment</button>
+                <div>
+                    <Button hierarchy='Primary' ref={addButton} onClick={showAddForm}>Add Appointment</Button>
+                </div>
+
+                { /* TODO Make this a component */ }
                 <div className='AppointmentsList'>
-                    <span>You have <strong>{ appointments.length } appointment{ appointments.length !== 1 ? 's' : '' }</strong>.</span>
                     <ul>
                         {
                             sortedAppointments.map(appointment => {
                                 return (
-                                    <AppointmentListItem
-                                        key={appointment.id}
-                                        appointment={appointment}
-                                        showEditForm={showEditForm}
-                                        deleteAppointment={deleteAppointment}
-                                        elementToFocusOnDelete={addButton}
-                                    />
+                                    <li key={appointment.id}>
+                                        <AppointmentCard
+                                            appointment={appointment}
+                                            showEditForm={showEditForm}
+                                            handleDeleteAppointment={handleDeleteAppointment}
+                                        />
+                                    </li>
                                 );
                             })
                         }
                     </ul>
                 </div>
             </main>
-            <footer>
-                Created by Mark Martinez.
-            </footer>
         </div>
     );
 }
