@@ -7,11 +7,12 @@ type CardProps = {
     children?: ReactElement
     actions?: ReactElement
     highlight?: boolean
+    opaque?: boolean
 }
 
-export default function Card({ label, subLabel, children, actions, highlight = false }: CardProps) {
+export default function Card({ label, subLabel, children, actions, highlight = false, opaque = false }: CardProps) {
     return (
-        <div className={`Card${highlight ? ' Highlight' : ''}`}>
+        <div className={`Card${highlight ? ' Highlight' : ''}${opaque ? ' Opaque' : ''}`}>
             <div className='PrimaryLabel'>{ label }</div>
             <div className='SecondaryLabel'>{ subLabel }</div>
             <div className='Body'>

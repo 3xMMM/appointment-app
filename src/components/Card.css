@@ -28,3 +28,7 @@
     border-left: solid #00d084;
     border-left-width: 8px;
 }
+
+.Card.Opaque {
+    opacity: 0.5;
+}

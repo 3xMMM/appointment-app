@@ -1,52 +1,91 @@
-import { useState } from 'react';
-import { Appointment } from '../App';
+import { useReducer } from 'react';
 
-/**
- * A custom hook to manage the app's state. This could have also been bundled
- * with the main App component, but I wanted to organize it better so that the
- * App component was less cluttered.
- *
- * Alternate Solution: If we wanted to globally access the Appointments feature
- * across an application, then this may be better handled by a state management
- * solution such as Redux. The Context API could have also been used if we were
- * drilling props down several components and we didn't benefit from the
- * pros/cons associated with a global state management solutions.
- *
- * Note: I opted to not use a global state management solution here because
- * 1) the app's scope is relatively small, and 2) the requirement was to not
- * use external libraries. Context was also not used because the props
- * required to manage the state only go 1-level deep into the component hierarchy.
- */
+export enum AppointmentLocation {
+    SanDiego = 'San Diego',
+    Portland = 'Portland',
+    Seattle = 'Seattle',
+    London = 'London',
+    Orlando = 'Orlando',
+}
+
+export type Appointment = {
+    id?: number
+    date: string
+    time: string
+    location: AppointmentLocation
+    description: string
+}
+export type AppointmentsAction = {
+    type: 'add' | 'edit' | 'delete'
+    payload: Appointment
+}
+
+const dateObject = new Date();
+const currentDate = dateObject.getFullYear() + "-" + ("0" + (dateObject.getMonth() + 1)).slice(-2) + "-" + ("0" + dateObject.getDate()).slice(-2);
+const currentTimePlusAnHour = ("0" + ((dateObject.getHours() + 1) % 24)).slice(-2) + ":30";
+
+function uniqueIdGenerator() {
+    let currentId = 3; // Is 3 because I initialize the app with three sample Appointments.
+    return function getNewId() {
+        return ++currentId;
+    }
+}
+
+const getAppointmentId = uniqueIdGenerator();
+
+const initialAppointments = (): Appointment[] => {
+    return [
+        {
+            id: 1,
+            date: '2023-02-24',
+            time: '11:00',
+            location: AppointmentLocation.Seattle,
+            description: 'This appointment was in the past and appears as a greyed out card.'
+        },
+        {
+            id: 2,
+            date: currentDate,
+            time: currentTimePlusAnHour,
+            location: AppointmentLocation.SanDiego,
+            description: 'This appointment is coming up soon and has a green/teal ribbon to denote its importance.'
+        },
+        {
+            id: 3,
+            date: '2023-10-15',
+            time: '16:00',
+            location: AppointmentLocation.London,
+            description: 'This appointment is in the future and doesn\'t have any special styling.'
+        },
+    ]
+}
+
+function reducer(appointments: Appointment[], action: AppointmentsAction) {
+    const appointment = action.payload;
+    switch (action.type) {
+        case 'add': {
+            return [...appointments, {
+                ...appointment,
+                id: getAppointmentId(),
+            }];
+        }
+        case 'edit': {
+            return appointments.map(a => {
+                if (a.id === appointment.id) {
+                    return appointment;
+                } else {
+                    return a;
+                }
+            });
+        }
+        case 'delete': {
+            return appointments.filter(a => a.id !== appointment.id);
+        }
+        default: {
+            throw Error(`Unknown action: ${action.type}`);
+        }
+    }
+}
+
 export default function useAppointments() {
-    const [appointmentId, setAppointmentId] = useState(1);
-    const [appointments, setAppointments] = useState<Appointment[]>([]);
-
-    const addAppointment = (appointment: Omit<Appointment, 'id'>): void => {
-        setAppointments([...appointments, {
-            id: appointmentId,
-            ...appointment,
-        }])
-        setAppointmentId(appointmentId + 1);
-    };
-
-    const deleteAppointment = (appointment: Appointment): void => {
-        setAppointments(appointments.filter(a => a.id !== appointment.id));
-    };
-
-    const editAppointment = (appointment: Appointment): void => {
-        setAppointments(appointments.map(a => {
-            if (a.id === appointment.id) {
-                return appointment;
-            } else {
-                return a;
-            }
-        }));
-    };
-
-    return {
-        appointments,
-        addAppointment,
-        deleteAppointment,
-        editAppointment,
-    };
+    return useReducer(reducer, null, initialAppointments);
 }

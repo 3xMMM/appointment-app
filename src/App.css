@@ -1,5 +1,5 @@
 .App {
-    width: 500px;
+    width: 400px;
     margin: 16px 16px;
 }
 
@@ -11,12 +11,30 @@
     margin-bottom: 4px;
 }
 
-.App > header > .AppointmentTotal {
-    opacity: 0.8;
+fieldset {
+    margin-top: 16px;
+    border: none;
+    font-size: 0.9rem;
+}
+
+legend {
+    font-weight: bold;
 }
 
 ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+}
+
+.AppointmentTotal {
+    display: inline-block;
+    font-size: 0.9rem;
+    margin-left: 14px;
+    opacity: 0.8;
+    margin-bottom: 6px;
+}
+
+hr {
+    opacity: 0.25;
 }

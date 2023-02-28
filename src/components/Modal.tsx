@@ -1,22 +1,15 @@
 import './Modal.css';
-import { MutableRefObject, ReactElement, useEffect } from 'react';
+import { ReactElement } from 'react';
 import { createPortal } from 'react-dom';
 
 interface ModalProps {
     title: string
     show: boolean
     onClose: () => void
-    elementToFocusOnClose: MutableRefObject<HTMLElement | null>
     children: ReactElement
 }
 
-export default function Modal({ title, show, onClose, elementToFocusOnClose, children }: ModalProps) {
-    useEffect(() => {
-        if (!show) {
-            elementToFocusOnClose.current?.focus();
-        }
-    }, [show]);
-
+export default function Modal({ title, show, onClose, children }: ModalProps) {
     return (
         createPortal(
             <div

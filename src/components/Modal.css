@@ -12,6 +12,7 @@
     transition: all 0.25s ease-in-out;
     pointer-events: none;
     cursor: pointer;
+    z-index: 100;
 }
 
 .ModalShow {
