@@ -1,2 +1,0 @@
-# Tests
-I'm a huge advocate for testing, and in a real-world application you'll find me pushing hard for tests. Due to the brevity of this assessment, however, I did not want to allocate extensive time to achieving higher test coverage. As a compromise, I've included two tests here for an example of my approach to testing a component and a hook.

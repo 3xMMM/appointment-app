@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/appointment-app/static/css/main.afbaf78b.css",
+    "main.js": "/appointment-app/static/js/main.57b98041.js",
+    "static/js/787.84274fe6.chunk.js": "/appointment-app/static/js/787.84274fe6.chunk.js",
+    "index.html": "/appointment-app/index.html",
+    "main.afbaf78b.css.map": "/appointment-app/static/css/main.afbaf78b.css.map",
+    "main.57b98041.js.map": "/appointment-app/static/js/main.57b98041.js.map",
+    "787.84274fe6.chunk.js.map": "/appointment-app/static/js/787.84274fe6.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.afbaf78b.css",
+    "static/js/main.57b98041.js"
+  ]
+}
